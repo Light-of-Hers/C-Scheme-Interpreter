@@ -152,13 +152,13 @@ compound_apply:
     jump(ev_sequence);
 
 ev_begin:
-    test(reg(exp) != nil);
+    assign(unev, begin_actions(reg(exp)));
+    test(reg(unev) != nil);
     branch(ev_begin_doit);
     assign(val, ok);
     jump(*cont);
 
 ev_begin_doit:
-    assign(unev, begin_actions(reg(exp)));
     push(cont);
     jump(ev_sequence);
 

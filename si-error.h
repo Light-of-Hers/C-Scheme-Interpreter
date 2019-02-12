@@ -16,7 +16,7 @@ struct Error {
 #define wishtype(x, t)                                                         \
     wish(CHECK(x, t),                                                          \
          std::string("Incorrect type of ") + repr(x) + ", expect " +           \
-             typeid(t).name() + ", given " + x->type.name(),                   \
+             typeid(t).name() + ", given " + (x ? x->type.name() : "null"),    \
          SKIP)
 
 #define unbound(x)                                                             \

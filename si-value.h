@@ -32,19 +32,18 @@ struct Value {
 template <class T> Var make(const T &t) {
     return std::make_shared<Value>(t);
 }
-template <class T> T &_get_value_data_(Var x) {
-    return std::any_cast<T &>(x->data);
-}
-
-#define CHECK(x, t) ((x)->type == typeid(t))
-#define GET(x, t) (wishtype(x, t), _get_value_data_<t>(x))
-
-#define nil nullptr
-#define guard cons(nil, nil)
 Var cons(Var a, Var b);
 Var &car(Var x);
 Var &cdr(Var x);
 String repr(Var x);
+#define nil nullptr
+#define guard cons(nil, nil)
+#define CHECK(x, t) ((x) && (x)->type == typeid(t))
+template <class T> T &_get_value_data_(Var x) {
+    wishtype(x, T);
+    return std::any_cast<T &>(x->data);
+}
+#define GET(x, t) _get_value_data_<t>(x)
 
 }; // namespace si
 

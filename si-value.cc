@@ -10,11 +10,9 @@ Var cons(Var a, Var b) {
     return std::make_shared<Value>(Pair({a, b}));
 }
 Var &car(Var x) {
-    wishtype(x, Pair);
     return GET(x, Pair).chld[0];
 }
 Var &cdr(Var x) {
-    wishtype(x, Pair);
     return GET(x, Pair).chld[1];
 }
 
