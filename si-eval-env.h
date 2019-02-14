@@ -18,6 +18,7 @@ void set_var_val(Var var, Var val, Var env);
 Var define_var(Var exp);
 Var define_val(Var exp);
 void define_var_val(Var var, Var val, Var env);
+Var make_define(Var var, Var val);
 
 }; // namespace si
 

@@ -16,8 +16,6 @@ bool definep(Var exp) {
 Var lookup(Var exp, Var env) {
     auto sb = GET(exp, Symbol);
     while (env) {
-        if (!CHECK(car(env), Frame))
-            assert(0);
         auto &frame = GET(car(env), Frame);
         auto it = frame.find(sb);
         if (it == frame.end()) {
@@ -88,6 +86,9 @@ Var define_val(Var exp) {
 void define_var_val(Var var, Var val, Var env) {
     auto sb = GET(var, Symbol);
     GET(car(env), Frame)[sb] = val;
+}
+Var make_define(Var var, Var val) {
+    return list({getBTSB(DEFINE), var, val});
 }
 
 }; // namespace si

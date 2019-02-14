@@ -8,6 +8,7 @@
 #include "si-eval-prim.h"
 #include "si-eval-util.h"
 #include "si-global.h"
+#include "si-io.h"
 #include "si-regs.h"
 #include "si-stack.h"
 #include <cassert>
@@ -54,8 +55,18 @@ eval_dispatch:
     branch(ev_define);
     test(ifp(reg(exp)));
     branch(ev_if);
+    test(andp(reg(exp)));
+    branch(ev_and);
+    test(orp(reg(exp)));
+    branch(ev_or);
+    test(condp(reg(exp)));
+    branch(ev_cond);
     test(lambdap(reg(exp)));
     branch(ev_lambda);
+    test(letp(reg(exp)));
+    branch(ev_let);
+    test(let_p(reg(exp)));
+    branch(ev_let_);
     test(beginp(reg(exp)));
     branch(ev_begin);
     test(applp(reg(exp)));
@@ -79,6 +90,14 @@ ev_lambda:
     assign(exp, lambda_body(reg(exp)));
     assign(val, make_proc(reg(unev), reg(exp), reg(env)));
     jump(*cont);
+
+ev_let:
+    assign(exp, let2exp(reg(exp)));
+    jump(eval_dispatch);
+
+ev_let_:
+    assign(exp, let_2lets(reg(exp)));
+    jump(eval_dispatch);
 
 ev_application:
     push(cont);
@@ -202,6 +221,18 @@ ev_if_then:
     assign(exp, if_then(reg(exp)));
     jump(eval_dispatch);
 
+ev_and:
+    assign(exp, and2if(reg(exp)));
+    jump(eval_dispatch);
+
+ev_or:
+    assign(exp, or2if(reg(exp)));
+    jump(eval_dispatch);
+
+ev_cond:
+    assign(exp, cond2if(reg(exp)));
+    jump(eval_dispatch);
+
 ev_assign:
     assign(unev, assign_var(reg(exp)));
     assign(exp, assign_val(reg(exp)));
@@ -238,13 +269,13 @@ ev_define_cont:
 }
 
 Var eval(Var exp, Var env) {
-    initStack();
-    initRegs();
     assign(exp, exp);
     assign(env, env);
     eval_machine();
+    auto res = reg(val);
     initStack();
-    return reg(val);
+    initRegs();
+    return res;
 }
 
 } // namespace si

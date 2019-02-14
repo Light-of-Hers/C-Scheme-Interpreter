@@ -10,6 +10,7 @@ Var begin_actions(Var exp);
 Var first_exp(Var exp);
 Var rest_exps(Var exp);
 bool last_expp(Var exp);
+Var make_begin(Var exps);
 
 }; // namespace si
 

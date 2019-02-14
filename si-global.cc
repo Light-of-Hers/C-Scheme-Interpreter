@@ -32,6 +32,8 @@ static std::vector<String> gbsb{
     "for",
     "let*",
     "**unassigned**",
+    "=>",
+    "**cond-test**",
 };
 
 void initGlobal() {

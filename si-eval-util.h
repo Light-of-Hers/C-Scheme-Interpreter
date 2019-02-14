@@ -3,6 +3,7 @@
 
 #include "si-global.h"
 #include "si-value.h"
+#include <functional>
 #include <vector>
 
 namespace si {
@@ -18,6 +19,7 @@ Var list(std::vector<Var> vars);
 int length(Var lst);
 bool taglistp_(Var lst, Symbol tag);
 #define taglistp(lst, tag) taglistp_(lst, (Symbol)BTSB::tag)
+Var map(Var lst, std::function<Var(Var)>);
 
 }; // namespace si
 

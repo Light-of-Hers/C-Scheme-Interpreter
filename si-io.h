@@ -9,6 +9,11 @@ namespace si {
 std::istream &operator>>(std::istream &is, Var &x);
 std::ostream &operator<<(std::ostream &os, Var x);
 
+#ifndef NDEBUG
+#define debug(x) (std::cerr << x << std::endl)
+#else
+#define debug(x) (void)0
+#endif
 }; // namespace si
 
 #endif

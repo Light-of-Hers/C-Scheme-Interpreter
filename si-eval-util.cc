@@ -1,4 +1,5 @@
 #include "si-eval-util.h"
+#include "si-io.h"
 #include "si-number.h"
 
 namespace si {
@@ -46,6 +47,15 @@ int length(Var lst) {
     while (lst)
         n++, lst = cdr(lst);
     return n;
+}
+Var map(Var lst, std::function<Var(Var)> proc) {
+    Var head = guard;
+    Var cur = head;
+    while (lst) {
+        cur = cdr(cur) = cons(proc(car(lst)), nil);
+        lst = cdr(lst);
+    }
+    return cdr(head);
 }
 
 }; // namespace si

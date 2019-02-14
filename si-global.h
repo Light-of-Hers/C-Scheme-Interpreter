@@ -30,6 +30,8 @@ enum class BTSB {
     FOR,
     LET_,
     UNASS,
+    ARROW,
+    COND_TEST,
 };
 
 Var getSymbol(Symbol sb);

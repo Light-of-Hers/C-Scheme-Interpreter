@@ -5,6 +5,8 @@
 #include "si-eval.h"
 #include "si-global.h"
 #include "si-io.h"
+#include "si-regs.h"
+#include "si-stack.h"
 #include "si-value.h"
 #include <cstdlib>
 #include <iostream>
@@ -17,6 +19,8 @@ const static String output("<< ");
 void driver() {
 Begin:
     initGlobal();
+    initStack();
+    initRegs();
     auto gb = extend_env(nil, nil, nil);
     initPProc(gb);
     Var x;
@@ -28,12 +32,12 @@ Begin:
             auto out = eval(x, gb);
             std::cout << output << out << std::endl;
         } catch (Error &e) {
-            std::cout << "Error: " << e.msg << std::endl;
+            std::cerr << "Error: " << e.msg << std::endl;
             if (e.handle == Error::Handle::REBOOT) {
-                std::cout << "Reboot..." << std::endl;
+                std::cerr << "Reboot..." << std::endl;
                 goto Begin;
             } else if (e.handle == Error::Handle::ABORT) {
-                std::cout << "Abort!" << std::endl;
+                std::cerr << "Abort!" << std::endl;
                 std::exit(0);
             }
         }

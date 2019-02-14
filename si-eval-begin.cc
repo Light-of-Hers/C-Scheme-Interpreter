@@ -18,5 +18,8 @@ Var rest_exps(Var exp) {
 bool last_expp(Var exp) {
     return cdr(exp) == nil;
 }
+Var make_begin(Var exps) {
+    return cons(getBTSB(BEGIN), exps);
+}
 
 }; // namespace si
