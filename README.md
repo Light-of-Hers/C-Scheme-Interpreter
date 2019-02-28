@@ -3,8 +3,8 @@ a simple Scheme Interpreter writen by C++
 
 ## Features
 
--- tail call optimization, implemented by the machine(virtual) level control
--- garbage collection, supported by some modern C++ features, such as smart pointer(C++11), any container(C++17)
++ tail call optimization, implemented by the machine(virtual) level control
++ garbage collection, supported by some modern C++ features, such as smart pointer(C++11), any container(C++17)
 
 ## Compile 
 
