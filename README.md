@@ -6,10 +6,16 @@ a simple Scheme Interpreter writen by C++
 + tail call optimization, implemented by the machine(virtual) level control
 + garbage collection, supported by some modern C++ features, such as smart pointer(C++11), any container(C++17)
 
-## Compile 
+## Not support
+
++ some builtin procedure, especially 'apply' (to implement 'map' and many other procedure)
++ number system (only supporting 64-bit float now)
++ ......
+
+## Compile & Run 
 
 ```
-make
+make && ./a
 ```
 
 # Test
@@ -18,7 +24,7 @@ make
 
 ```
 >> (define x 2)
-<< ()
+<< ok
 >> ((lambda (f)
            ((lambda (x)     
                     (f 3))
@@ -31,28 +37,33 @@ The representation of `lambda` and `environment` is shown below.
 
 ```
 >> (define f (lambda (x y) (+ x y)))
-<< ()
+<< ok
 >> f
-<< (lambda_tag (x y) (+ x y) ...env...)
+<< (**procedure** (x y) ((+ x y)) (**Frame** (+) (-) (*) (/) (%) (cons) (car) (cdr) (set-car!) (set-cdr!) (=) (<) (>) (<=) (>=) (not) (eq?) (null) (string?) (boolean?) (number?) (symbol?) (pair?) (x) (f)))
 ```
 
 ## cons, car, cdr
 
 ```
->> (define cons (lambda (x y) 
-    (lambda (c)
-      (if (= c 0) x y))))
-<< ()
->> (define car (lambda (x)
-    (x 0)))
-<< ()
->> (define cdr (lambda (x)
-    (x 1)))
-<< ()
 >> (define x (cons 100 200))
-<< ()
+<< ok
 >> (cdr x)
 << 200
 >> (car x)
 << 100
+>> (define lst '(1 2 3 4))
+<< ok
+>> lst
+<< (1 2 3 4)
+>> (car lst)
+<< 1
+>> (cdr lst)
+<< (2 3 4)
+```
+## List Argument
+```
+>> (define (f first . rest) rest)
+<< ok
+>> (f 1 2 3 4)
+<< (2 3 4)
 ```
