@@ -1,8 +1,8 @@
 #ifndef _si_value_h_
 #define _si_value_h_
 
+#include "si-any.h"
 #include "si-error.h"
-#include <any>
 #include <map>
 #include <memory>
 #include <string>
@@ -25,11 +25,12 @@ struct Pair {
 
 struct Value {
     const std::type_info &type;
-    std::any data;
-    template <class T> Value(const T &t) : type(typeid(T)), data(t) {
-    }
+    any data;
+    template <class T>
+    Value(const T &t) : type(typeid(T)), data(t) {}
 };
-template <class T> Var make(const T &t) {
+template <class T>
+Var make(const T &t) {
     return std::make_shared<Value>(t);
 }
 Var cons(Var a, Var b);
@@ -39,9 +40,10 @@ String repr(Var x);
 #define nil nullptr
 #define guard cons(nil, nil)
 #define CHECK(x, t) ((x) && (x)->type == typeid(t))
-template <class T> T &_get_value_data_(Var x) {
+template <class T>
+T &_get_value_data_(Var x) {
     wishtype(x, T);
-    return std::any_cast<T &>(x->data);
+    return any_cast<T &>(x->data);
 }
 #define GET(x, t) _get_value_data_<t>(x)
 

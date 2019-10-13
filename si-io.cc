@@ -2,7 +2,7 @@
 #include "si-error.h"
 #include "si-global.h"
 #include "si-number.h"
-#include <any>
+#include "si-any.h"
 #include <cassert>
 #include <sstream>
 #include <vector>
@@ -12,7 +12,7 @@ namespace si {
 static const std::string msg = "Invalid syntax";
 
 struct Token {
-    enum Type {
+    enum class Type {
         LEFT_BRACKET,
         RIGHT_BRACKET,
         DOT,
@@ -22,18 +22,18 @@ struct Token {
         STRING,
         BOOLEAN
     } type;
-    std::any attr;
+    any attr;
 
     Token() = default;
     Token(Type t) : type(t) {
     }
-    Token(Number x) : type(NUMBER), attr(x) {
+    Token(Number x) : type(Type::NUMBER), attr(x) {
     }
-    Token(const String &x) : type(STRING), attr(x) {
+    Token(const String &x) : type(Type::STRING), attr(x) {
     }
-    Token(Symbol x) : type(SYMBOL), attr(x) {
+    Token(Symbol x) : type(Type::SYMBOL), attr(x) {
     }
-    Token(Boolean x) : type(BOOLEAN), attr(x) {
+    Token(Boolean x) : type(Type::BOOLEAN), attr(x) {
     }
     const String str() const;
 };
@@ -73,7 +73,7 @@ static String split(const String &code) {
 static Tokens scan(const String &code) {
     using namespace std;
     Tokens tks;
-    // tks.push_back(Token::LEFT_BRACKET);
+    // tks.push_back(Token::Type::LEFT_BRACKET);
     // tks.push_back(addSymbol("begin"));
 
     istringstream input(split(code));
@@ -87,13 +87,13 @@ static Tokens scan(const String &code) {
                 istringstream strin(line);
                 while (strin >> tk) {
                     if (tk == "'") {
-                        tks.push_back(Token::QUOTE);
+                        tks.push_back(Token::Type::QUOTE);
                     } else if (tk == ".") {
-                        tks.push_back(Token::DOT);
+                        tks.push_back(Token::Type::DOT);
                     } else if (tk == "(") {
-                        tks.push_back(Token::LEFT_BRACKET);
+                        tks.push_back(Token::Type::LEFT_BRACKET);
                     } else if (tk == ")") {
-                        tks.push_back(Token::RIGHT_BRACKET);
+                        tks.push_back(Token::Type::RIGHT_BRACKET);
                     } else if (tk == "#t" || tk == "#f") {
                         tks.push_back((bool)(tk == "#t"));
                     } else {
@@ -107,28 +107,28 @@ static Tokens scan(const String &code) {
             }
         }
     }
-    // tks.push_back(Token::RIGHT_BRACKET);
+    // tks.push_back(Token::Type::RIGHT_BRACKET);
     return tks;
 }
 
 const String Token::str() const {
     using namespace std;
     ostringstream sout;
-    if (type == LEFT_BRACKET) {
+    if (type == Type::LEFT_BRACKET) {
         sout << "<(>";
-    } else if (type == RIGHT_BRACKET) {
+    } else if (type == Type::RIGHT_BRACKET) {
         sout << "<)>";
-    } else if (type == QUOTE) {
+    } else if (type == Type::QUOTE) {
         sout << "<'>";
-    } else if (type == DOT) {
+    } else if (type == Type::DOT) {
         sout << "<.>";
-    } else if (type == NUMBER) {
+    } else if (type == Type::NUMBER) {
         sout << "<number, " << any_cast<Number>(attr) << ">";
-    } else if (type == STRING) {
+    } else if (type == Type::STRING) {
         sout << "<string, " << any_cast<String>(attr) << ">";
-    } else if (type == SYMBOL) {
+    } else if (type == Type::SYMBOL) {
         sout << "<symbol, " << any_cast<Symbol>(attr) << ">";
-    } else if (type == BOOLEAN) {
+    } else if (type == Type::BOOLEAN) {
         sout << "<boolean, " << any_cast<Boolean>(attr) << ">";
     } else {
         return "";
@@ -139,22 +139,22 @@ const String Token::str() const {
 static int step;
 Var parse_aux(const Tokens &tks) {
     Token tk = tks[step++];
-    if (tk.type == Token::NUMBER) {
-        return make(std::any_cast<Number>(tk.attr));
-    } else if (tk.type == Token::STRING) {
-        return make(std::any_cast<String>(tk.attr));
-    } else if (tk.type == Token::BOOLEAN) {
-        return getBoolean(std::any_cast<Boolean>(tk.attr));
-    } else if (tk.type == Token::SYMBOL) {
-        return getSymbol(std::any_cast<Symbol>(tk.attr));
-    } else if (tk.type == Token::LEFT_BRACKET) {
+    if (tk.type == Token::Type::NUMBER) {
+        return make(any_cast<Number>(tk.attr));
+    } else if (tk.type == Token::Type::STRING) {
+        return make(any_cast<String>(tk.attr));
+    } else if (tk.type == Token::Type::BOOLEAN) {
+        return getBoolean(any_cast<Boolean>(tk.attr));
+    } else if (tk.type == Token::Type::SYMBOL) {
+        return getSymbol(any_cast<Symbol>(tk.attr));
+    } else if (tk.type == Token::Type::LEFT_BRACKET) {
         Var head = cons(nil, nil);
         Var cur = head;
-        while (tks[step].type != Token::RIGHT_BRACKET) {
-            if (tks[step].type == Token::DOT) {
+        while (tks[step].type != Token::Type::RIGHT_BRACKET) {
+            if (tks[step].type == Token::Type::DOT) {
                 step++;
                 cdr(cur) = parse_aux(tks);
-                wish(tks[step].type == Token::RIGHT_BRACKET, msg, SKIP);
+                wish(tks[step].type == Token::Type::RIGHT_BRACKET, msg, SKIP);
                 break;
             }
             cdr(cur) = cons(parse_aux(tks), nil);
@@ -162,7 +162,7 @@ Var parse_aux(const Tokens &tks) {
         }
         step++;
         return cdr(head);
-    } else if (tk.type == Token::QUOTE) {
+    } else if (tk.type == Token::Type::QUOTE) {
         return cons(getBTSB(QUOTE), cons(parse_aux(tks), nil));
     } else {
         return nil;
